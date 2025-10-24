@@ -1,0 +1,142 @@
+# --- Build artifacts ---
+bin/
+obj/
+[Bb]uild/
+artifacts/
+[Ll]ogs/
+*.log
+
+# Incremental/restore caches
+**/project.lock.json
+**/project.fragment.lock.json
+**/project.assets.json
+
+# --- IDEs & editors ---
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# VS Code (keep only recommended extensions/settings if you want)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains Rider / ReSharper
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+*.DotSettings
+
+# Visual Studio profiler/traces
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# NCrunch
+_ncrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# StyleCop
+StyleCopReport.xml
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# --- Packages / NuGet ---
+packages/
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+*.nupkg
+*.snupkg
+*.nuspec
+.nuget/
+
+# Package lock (usually commit; ignore only if you don’t use it)
+# packages.lock.json
+
+# --- Publish / wwwroot artifacts ---
+publish/
+**/wwwroot/lib/
+
+# --- Test results & coverage ---
+TestResults/
+*.coverage
+*.coveragexml
+.coverage
+coverage/
+coverage.xml
+lcov.info
+.opencover.xml
+
+# --- Configuration & secrets (keep non-sensitive templates) ---
+appsettings.*.local.json
+secrets.json
+*.secret.json
+*.user.json
+local.settings.json         # Azure Functions local settings
+.env
+.env.*
+!.env.example
+
+# --- Certificates & keys ---
+*.pfx
+*.p12
+*.cer
+*.crt
+*.pem
+*.key
+*.snk
+aspnet/https/
+
+# --- Databases (local dev) ---
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Frontend (for SPA/wasm hosted in the solution) ---
+node_modules/
+bower_components/
+dist/
+tmp/
+.yarn/*
+.pnp.*
+*.tsbuildinfo
+
+# --- Server/IIS/Azure publish helpers ---
+*.pubxml.user
+*.publishproj
+*.publishsettings
+IISExpress/
+
+# --- OS / tooling noise ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# Archives / backups / patch leftovers
+*.bak
+*.tmp
+*.orig
+*.patch
