@@ -7,5 +7,5 @@ public class AppDbContext : DbContext
 
     }
 
-    DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
 }

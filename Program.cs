@@ -9,6 +9,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+app.MapPost("/api/orders", async (AppDbContext context, Order order) =>
+{
+    await context.Orders.AddAsync(order);
+    await context.SaveChangesAsync();
+
+    return Results.Created($"/api/orders/{order.Id}", order);
+});
+
+app.MapGet("/api/orders/{id}", async (AppDbContext context, int id) =>
+{
+    Order? order = await context.Orders.FirstOrDefaultAsync(o => o.Id == id);
+
+    if (order != null) return Results.Ok(order);
+
+    return Results.NotFound();
+});
 
 app.Run();
