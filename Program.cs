@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,15 +12,21 @@ var app = builder.Build();
 
 app.MapPost("/api/orders", async (AppDbContext context, Order order) =>
 {
-    await context.Orders.AddAsync(order);
-    await context.SaveChangesAsync();
+    CreateOrderCommand createOrderCommand = new CreateOrderCommand(order.FirstName, order.LastName, order.Statud, order.TotalCost);
+    Order? newOrder = await CreateOrderCommandHandler.Handle(createOrderCommand, context);
 
-    return Results.Created($"/api/orders/{order.Id}", order);
+    if (newOrder is null)
+    {
+        return Results.BadRequest("Failed to create the order");
+    }
+
+    return Results.Created($"/api/orders/{newOrder.Id}", newOrder);
 });
 
 app.MapGet("/api/orders/{id}", async (AppDbContext context, int id) =>
 {
-    Order? order = await context.Orders.FirstOrDefaultAsync(o => o.Id == id);
+    GetOrderByIdQuery query = new GetOrderByIdQuery(id);
+    Order? order = await GetOrderByIdQueryHandler.Handle(query, context);
 
     if (order != null) return Results.Ok(order);
 
