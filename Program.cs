@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,19 +12,30 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ICommandHandler<CreateOrderCommand, OrderDTO>, CreateOrderCommandHandler>();
 builder.Services.AddScoped<IQueryHandler<GetOrderByIdQuery, OrderDTO>, GetOrderByIdQueryHandler>();
 
+builder.Services.AddScoped<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
+
 var app = builder.Build();
 
 app.MapPost("/api/orders", async (ICommandHandler<CreateOrderCommand, OrderDTO> commandHandler, Order order) =>
 {
-    CreateOrderCommand createOrderCommand = new CreateOrderCommand(order.FirstName, order.LastName, order.Statud, order.TotalCost);
-    OrderDTO? newOrder = await commandHandler.HandleAsync(createOrderCommand);
-
-    if (newOrder is null)
+    try
     {
-        return Results.BadRequest("Failed to create the order");
-    }
+        CreateOrderCommand createOrderCommand = new CreateOrderCommand(order.FirstName, order.LastName, order.Statud, order.TotalCost);
+        OrderDTO? newOrder = await commandHandler.HandleAsync(createOrderCommand);
 
-    return Results.Created($"/api/orders/{newOrder.Id}", newOrder);
+        if (newOrder is null)
+        {
+            return Results.BadRequest("Failed to create the order");
+        }
+
+        return Results.Created($"/api/orders/{newOrder.Id}", newOrder);
+    }
+    catch (ValidationException ex)
+    {
+        var errors = ex.Errors.Select(x => new { x.PropertyName, x.ErrorMessage });
+
+        return Results.BadRequest(errors);
+    }
 });
 
 app.MapGet("/api/orders/{id}", async (IQueryHandler<GetOrderByIdQuery, OrderDTO> queryHandler, int id) =>
