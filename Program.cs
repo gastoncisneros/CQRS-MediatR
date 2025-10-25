@@ -8,12 +8,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BaseConnection"));
 });
 
+builder.Services.AddScoped<ICommandHandler<CreateOrderCommand, OrderDTO>, CreateOrderCommandHandler>();
+builder.Services.AddScoped<IQueryHandler<GetOrderByIdQuery, OrderDTO>, GetOrderByIdQueryHandler>();
+
 var app = builder.Build();
 
-app.MapPost("/api/orders", async (AppDbContext context, Order order) =>
+app.MapPost("/api/orders", async (ICommandHandler<CreateOrderCommand, OrderDTO> commandHandler, Order order) =>
 {
     CreateOrderCommand createOrderCommand = new CreateOrderCommand(order.FirstName, order.LastName, order.Statud, order.TotalCost);
-    Order? newOrder = await CreateOrderCommandHandler.Handle(createOrderCommand, context);
+    OrderDTO? newOrder = await commandHandler.HandleAsync(createOrderCommand);
 
     if (newOrder is null)
     {
@@ -23,10 +26,10 @@ app.MapPost("/api/orders", async (AppDbContext context, Order order) =>
     return Results.Created($"/api/orders/{newOrder.Id}", newOrder);
 });
 
-app.MapGet("/api/orders/{id}", async (AppDbContext context, int id) =>
+app.MapGet("/api/orders/{id}", async (IQueryHandler<GetOrderByIdQuery, OrderDTO> queryHandler, int id) =>
 {
     GetOrderByIdQuery query = new GetOrderByIdQuery(id);
-    Order? order = await GetOrderByIdQueryHandler.Handle(query, context);
+    OrderDTO? order = await queryHandler.HandleAsync(query);
 
     if (order != null) return Results.Ok(order);
 

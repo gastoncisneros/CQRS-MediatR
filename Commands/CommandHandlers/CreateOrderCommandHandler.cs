@@ -1,8 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 
-public class CreateOrderCommandHandler
+public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, OrderDTO>
 {
-    public static async Task<Order> Handle(CreateOrderCommand command, AppDbContext context)
+    private readonly AppDbContext _context;
+
+    public CreateOrderCommandHandler(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<OrderDTO> HandleAsync(CreateOrderCommand command)
     {
         Order newOrder = new Order()
         {
@@ -12,9 +19,17 @@ public class CreateOrderCommandHandler
             TotalCost = command.totalCost
         };
 
-        await context.Orders.AddAsync(newOrder);
-        await context.SaveChangesAsync();
+        await _context.Orders.AddAsync(newOrder);
+        await _context.SaveChangesAsync();
 
-        return newOrder;
+        OrderDTO orderDTO = new OrderDTO(
+            newOrder.Id,
+            newOrder.FirstName,
+            newOrder.LastName,
+            newOrder.Statud,
+            newOrder.CreatedAt,
+            newOrder.TotalCost);
+
+        return orderDTO;
     }
 }
