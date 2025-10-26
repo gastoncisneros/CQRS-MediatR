@@ -3,9 +3,9 @@ using System.Linq;
 
 public class GetOrdersSummaryQueryHandler : IQueryHandler<GetOrdersSummaryQuery, IEnumerable<OrderSummaryDTO>>
 {
-    private readonly AppDbContext _context;
+    private readonly ReadDbContext _context;
 
-    public GetOrdersSummaryQueryHandler(AppDbContext context)
+    public GetOrdersSummaryQueryHandler(ReadDbContext context)
     {
         _context = context;
     }

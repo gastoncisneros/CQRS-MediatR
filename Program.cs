@@ -9,6 +9,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BaseConnection"));
 });
 
+builder.Services.AddDbContext<WriteDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("WriteDbConnection"));
+});
+
+builder.Services.AddDbContext<ReadDbContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("ReadDbConnection"));
+});
+
 builder.Services.AddScoped<ICommandHandler<CreateOrderCommand, OrderDTO>, CreateOrderCommandHandler>();
 builder.Services.AddScoped<IQueryHandler<GetOrderByIdQuery, OrderDTO>, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IQueryHandler<GetOrdersSummaryQuery, IEnumerable<OrderSummaryDTO>>, GetOrdersSummaryQueryHandler>();

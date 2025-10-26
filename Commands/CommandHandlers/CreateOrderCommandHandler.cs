@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, OrderDTO>
 {
-    private readonly AppDbContext _context;
+    private readonly WriteDbContext _context;
     private readonly IValidator<CreateOrderCommand> _validator;
     private readonly IEventPublisher _eventPublisher;
 
     public CreateOrderCommandHandler(
-        AppDbContext context,
+        WriteDbContext context,
         IValidator<CreateOrderCommand> validator,
         IEventPublisher eventPublisher)
     {
