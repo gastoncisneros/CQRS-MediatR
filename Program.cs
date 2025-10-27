@@ -25,7 +25,8 @@ builder.Services.AddScoped<IQueryHandler<GetOrdersSummaryQuery, IEnumerable<Orde
 
 builder.Services.AddScoped<IValidator<CreateOrderCommand>, CreateOrderCommandValidator>();
 
-builder.Services.AddScoped<IEventPublisher, ConsoleEventPublisher>();
+builder.Services.AddScoped<IEventHandler<OrderCreatedEvent>, OrderCreatedProjectionHandler>();
+builder.Services.AddScoped<IEventPublisher, InProcessEventPublisher>();
 
 var app = builder.Build();
 
@@ -67,5 +68,6 @@ app.MapGet("/api/orders", async (IQueryHandler<GetOrdersSummaryQuery, IEnumerabl
 
     return Results.Ok(summaries);
 });
+
 
 app.Run();

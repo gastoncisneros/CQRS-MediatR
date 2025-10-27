@@ -46,7 +46,14 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Ord
             newOrder.CreatedAt,
             newOrder.TotalCost);
 
-        await _eventPublisher.PublishAsync(orderDTO);
+        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(
+            newOrder.Id,
+            newOrder.FirstName,
+            newOrder.LastName,
+            newOrder.TotalCost
+        );
+
+        await _eventPublisher.PublishAsync(orderCreatedEvent);
 
         return orderDTO;
     }
