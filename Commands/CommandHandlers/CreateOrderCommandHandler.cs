@@ -1,26 +1,27 @@
 using FluentValidation;
 using FluentValidation.Results;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, OrderDTO>
+public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderDTO>
 {
     private readonly WriteDbContext _context;
     private readonly IValidator<CreateOrderCommand> _validator;
-    private readonly IEventPublisher _eventPublisher;
+    private readonly IMediator _mediator;
 
     public CreateOrderCommandHandler(
         WriteDbContext context,
         IValidator<CreateOrderCommand> validator,
-        IEventPublisher eventPublisher)
+        IMediator mediator)
     {
         _context = context;
         _validator = validator;
-        _eventPublisher = eventPublisher;
+        _mediator = mediator;
     }
 
-    public async Task<OrderDTO> HandleAsync(CreateOrderCommand command)
+    public async Task<OrderDTO> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = await _validator.ValidateAsync(command);
+        ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -29,14 +30,14 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Ord
 
         Order newOrder = new Order()
         {
-            FirstName = command.firstName,
-            LastName = command.lastName,
-            Statud = command.status,
-            TotalCost = command.totalCost
+            FirstName = request.firstName,
+            LastName = request.lastName,
+            Statud = request.status,
+            TotalCost = request.totalCost
         };
 
-        await _context.Orders.AddAsync(newOrder);
-        await _context.SaveChangesAsync();
+        await _context.Orders.AddAsync(newOrder, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         OrderDTO orderDTO = new OrderDTO(
             newOrder.Id,
@@ -53,7 +54,7 @@ public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand, Ord
             newOrder.TotalCost
         );
 
-        await _eventPublisher.PublishAsync(orderCreatedEvent);
+        await _mediator.Publish(orderCreatedEvent);
 
         return orderDTO;
     }
